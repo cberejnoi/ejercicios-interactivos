@@ -1,0 +1,68 @@
+<iframe srcdoc="
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<style>
+  body { margin: 0; padding: 10px; font-family: sans-serif; background: #ffffff; box-sizing: border-box; user-select: none; }
+  .box { width: 340px; height: 410px; border: 1px solid #ccc; border-radius: 8px; padding: 10px; box-sizing: border-box; margin: 0 auto; background: #fff; }
+  .formula { height: 25px; line-height: 25px; font-size: 1rem; font-weight: bold; text-align: center; color: #2c3e50; }
+  canvas { border: 1px solid #ddd; background: #fafafa; border-radius: 4px; display: block; margin: 5px auto; }
+  .row { height: 30px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+  input[type=range] { width: 220px; margin: 0; }
+  span.val { display: inline-block; width: 35px; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class='box'>
+  <div id='f' class='formula'>f(x) = 1.0x² + 0.0x + 0.0</div>
+  <canvas id='c' width='320' height='240'></canvas>
+  <div class='row'>
+    <span>a: <span id='va' class='val'>1.0</span></span>
+    <input type='range' id='sa' min='-5' max='5' step='0.1' value='1'>
+  </div>
+  <div class='row'>
+    <span>b: <span id='vb' class='val'>0.0</span></span>
+    <input type='range' id='sb' min='-10' max='10' step='0.1' value='0'>
+  </div>
+  <div class='row'>
+    <span>c: <span id='vc' class='val'>0.0</span></span>
+    <input type='range' id='sc' min='-10' max='10' step='0.1' value='0'>
+  </div>
+</div>
+<script>
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  const sa = document.getElementById('sa'), sb = document.getElementById('sb'), sc = document.getElementById('sc');
+  const va = document.getElementById('va'), vb = document.getElementById('vb'), vc = document.getElementById('vc'), f = document.getElementById('f');
+  const scale = 20, w = canvas.width, h = canvas.height, ox = w / 2, oy = h / 2;
+
+  function draw() {
+    const a = parseFloat(sa.value), b = parseFloat(sb.value), c = parseFloat(sc.value);
+    va.textContent = a.toFixed(1); vb.textContent = b.toFixed(1); vc.textContent = c.toFixed(1);
+    const sbSign = b >= 0 ? '+' : '-', scSign = c >= 0 ? '+' : '-';
+    f.textContent = 'f(x) = ' + a.toFixed(1) + 'x² ' + sbSign + ' ' + Math.abs(b).toFixed(1) + 'x ' + scSign + ' ' + Math.abs(c).toFixed(1);
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.beginPath(); ctx.strokeStyle = '#eee'; ctx.lineWidth = 1;
+    for (let x = -10; x <= 10; x++) { ctx.moveTo(ox + x * scale, 0); ctx.lineTo(ox + x * scale, h); }
+    for (let y = -10; y <= 10; y++) { ctx.moveTo(0, oy - y * scale); ctx.lineTo(w, oy - y * scale); }
+    ctx.stroke();
+
+    ctx.beginPath(); ctx.strokeStyle = '#555'; ctx.lineWidth = 1.5;
+    ctx.moveTo(0, oy); ctx.lineTo(w, oy); ctx.moveTo(ox, 0); ctx.lineTo(ox, h); ctx.stroke();
+
+    ctx.beginPath(); ctx.strokeStyle = '#007bff'; ctx.lineWidth = 2;
+    let first = true;
+    for (let px = 0; px <= w; px++) {
+      let x = (px - ox) / scale, y = a * x * x + b * x + c, py = oy - y * scale;
+      if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+    }
+    ctx.stroke();
+  }
+  sa.oninput = sb.oninput = sc.oninput = draw;
+  draw();
+</script>
+</body>
+</html>
+" style="width: 360px; height: 430px; border: none; overflow: hidden; display: block; margin: 0 auto;" scrolling="no"></iframe>
